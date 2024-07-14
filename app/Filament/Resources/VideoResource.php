@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\VideoResource\Pages;
 use App\Filament\Resources\VideoResource\RelationManagers;
 use App\Models\Video;
+use App\Models\User;
 use Filament\Forms;
 use getID3;
 use Livewire\TemporaryUploadedFile;
@@ -56,6 +57,7 @@ class VideoResource extends Resource
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table->columns([
+            //Tables\Columns\ImageColumn::make('thumbnail')->label('Thumbnail')->disk('public')->path('thumbnails'), // Precisa que as miniaturas estejam armazenadas no disco 'public' no diretório 'thumbnails'
             Tables\Columns\TextColumn::make('title')->label('Video'),
             Tables\Columns\TextColumn::make('file_path')->label('File Path'),
             Tables\Columns\TextColumn::make('formatted_duration')->label('Duração'),
@@ -70,10 +72,10 @@ class VideoResource extends Resource
                 ->label('Avatar')
                 ->circular()
                 ->size(40),
-            Tables\Columns\TextColumn::make('user.name')->label('Uploaded by')
-                ->formatStateUsing(function ($state) {
-                    return $state ? $state->name : '';
-                }),
+            //Tables\Columns\TextColumn::make('user.name')->label('Uploaded by')
+            //    ->formatStateUsing(function ($state) {
+            //        return $state ? $state->name : '';
+            //    }),
             Tables\Columns\TextColumn::make('created_at')->date()->label('Upload em'),
         ]);
     }

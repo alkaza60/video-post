@@ -34,6 +34,9 @@ class TagResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('slug'),
+                Tables\Columns\TextColumn::make('videos_count')
+                    ->label('Videos')
+                    ->counts('videos'), // 'videos' relacionados com Tag
             ])
             ->filters([
                 //

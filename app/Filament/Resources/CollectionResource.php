@@ -33,7 +33,8 @@ class CollectionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
-                //Tables\Columns\TextColumn::make('videos_count')->counts('videos'),
+                Tables\Columns\TextColumn::make('videos_count')->counts('videos')->label('Videos'),
+                Tables\Columns\TextColumn::make('storage_used')->label('Storage Used'),
             ])
             ->filters([
                 //

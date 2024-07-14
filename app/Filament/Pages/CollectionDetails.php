@@ -1,26 +1,45 @@
 <?php
 
-namespace App\Filament\Resources\VideoResource\Pages;
+namespace App\Filament\Pages;
 
-use App\Filament\Resources\VideoResource;
+use App\Models\Collection;
 use App\Models\Video;
 use Filament\Actions;
+use Filament\Tables;
 use Filament\Forms;
+use Filament\Pages\Page;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Support\Enums\MaxWidth;
-use Filament\Resources\Pages\EditRecord;
 use getID3;
 
-class EditVideo extends EditRecord
-{
-    protected static string $resource = VideoResource::class;
 
+class CollectionDetails extends Page implements Tables\Contracts\HasTable
+{
+    use Tables\Concerns\InteractsWithTable;
+
+    protected static string $view = 'filament.pages.collection-details';
+    
+    // Remover da navegação
+    protected static bool $shouldRegisterNavigation = false;
+
+    public $collection;
     public $video;
+
+    public function mount($record)
+    {
+        $this->collection = Collection::findOrFail($record);
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return Video::query()->where('collection_id', $this->collection->id);
+    }
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('editVideo')
-                ->label('Update Video')
+            Actions\Action::make('createVideo')
+                ->label('Upload Video')
                 ->slideOver()
                 ->modalWidth(MaxWidth::Medium) // Define a largura do SlideOver
                 ->form([
@@ -45,24 +64,32 @@ class EditVideo extends EditRecord
                                 $set('status', 'ready');
                             }
                         }),
-                    Forms\Components\Select::make('collection_id')
-                        ->relationship('collection', 'name')
-                        ->required()
-                        ->label('Collection'),
                     Forms\Components\Select::make('tags')
-                        ->relationship('tags', 'name')
                         ->multiple()
-                        ->preload()
+                        ->relationship('tags', 'name')
                         ->label('Tags'),
                     Forms\Components\Hidden::make('size'),
                     Forms\Components\Hidden::make('duration'),
                     Forms\Components\Hidden::make('status')->default('processing'),
                     Forms\Components\Hidden::make('user_id')->default(auth()->id()),
+                    Forms\Components\Hidden::make('collection_id')->default($this->collection->id), // Adicionar o collection_id automaticamente
                 ])
                 ->action(function (array $data): void {
-                    $this->video = Video::edit($data);
-                    $this->video->tags()->sync($data['tags'] ?? []); // Sincronizar tags com o vídeo
+                    $video = Video::create($data);
+                    $video->tags()->sync($data['tags'] ?? []); // Sincronizar tags com o vídeo
                 }),
+        ];
+    }
+
+    protected function getTableColumns(): array
+    {
+        return [
+            //Tables\Columns\ImageColumn::make('thumbnail')->label('Thumbnail')->disk('public')->path('thumbnails'), // Precisa que as miniaturas estejam armazenadas no disco 'public' no diretório 'thumbnails'
+            Tables\Columns\TextColumn::make('title')->label('Title')->searchable(),
+            Tables\Columns\TextColumn::make('formatted_duration')->label('Duração')->sortable(),
+            Tables\Columns\TextColumn::make('formatted_size')->label('Tamanho')->sortable(),
+            Tables\Columns\TextColumn::make('status')->label('Status')->sortable(),
+            Tables\Columns\TextColumn::make('created_at')->label('Uploaded At')->dateTime('d/m/Y H:i')->sortable(),
         ];
     }
 }

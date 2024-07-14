@@ -18,11 +18,14 @@ return new class extends Migration
             $table->integer('duration');
             $table->integer('size');
             $table->enum('status', ['processing', 'ready', 'error'])->default('processing');
-            $table->unsignedBigInteger('user_id'); // Adicionar coluna user_id
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('collection_id');
             $table->timestamp('uploaded_at')->nullable();
             $table->timestamps();
-            // Adicionar relacionamento de chave estrangeira para a tabela users, com cascading delete
+
+            // chaves estrangeiras
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('collection_id')->references('id')->on('collections')->onDelete('cascade');
         });
     }
 

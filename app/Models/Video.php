@@ -11,11 +11,13 @@ class Video extends Model
 
     protected $fillable = [
         'title', 
-        'file_path', 
+        'file_path',
         'duration', 
         'size', 
-        'status', 
-        'uploaded_at'
+        'status',
+        'uploaded_at',
+        'collection_id',
+        'user_id'
     ];
 
     // Accessor para formatar a duração
@@ -45,7 +47,7 @@ class Video extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class, 'tag_video');
     }
 
     public function user()

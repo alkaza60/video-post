@@ -44,4 +44,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        // Substitua pelo caminho correto para a foto do perfil do usuário
+        return $this->profile_photo_path 
+            ? asset('storage/' . $this->profile_photo_path) 
+            : 'https://via.placeholder.com/150';
+    }
 }

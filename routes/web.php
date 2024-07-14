@@ -1,11 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Membro\Home;
-use App\Filament\Resources\VideoResource\Pages\ListVideos;
+use App\Filament\Pages\CollectionDetails;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/', Home::class);
+Route::get('/collections/{record}', CollectionDetails::class)->name('collections.show');

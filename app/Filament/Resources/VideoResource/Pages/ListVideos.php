@@ -8,14 +8,13 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Resource;
-use Filament\Pages\Actions\CreateAction;
-use Livewire\TemporaryUploadedFile;
 use getID3;
 
 class ListVideos extends ListRecords
 {
     protected static string $resource = VideoResource::class;
+
+    public $video;
 
     protected function getHeaderActions(): array
     {
@@ -46,13 +45,23 @@ class ListVideos extends ListRecords
                                 $set('status', 'ready');
                             }
                         }),
+                    Forms\Components\Select::make('collection_id')
+                        ->relationship('collection', 'name')
+                        ->required()
+                        ->label('Collection'),
+                    Forms\Components\Select::make('tags')
+                        ->relationship('tags', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->label('Tags'),
                     Forms\Components\Hidden::make('size'),
                     Forms\Components\Hidden::make('duration'),
                     Forms\Components\Hidden::make('status')->default('processing'),
                     Forms\Components\Hidden::make('user_id')->default(auth()->id()),
                 ])
                 ->action(function (array $data): void {
-                    Video::create($data);
+                    $this->video = Video::create($data);
+                    $this->video->tags()->sync($data['tags'] ?? []); // Sincronizar tags com o vídeo
                 }),
         ];
     }
